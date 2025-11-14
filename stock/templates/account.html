@@ -1,22 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div>
-        <h4>Денежные средства</h4>
+    <h2>Личный кабинет</h2>
+    
+    <div style="margin-bottom: 30px;">
+        <h4>💰 Денежные средства</h4>
         {% for acc_currency in currencies %}
-            <div>{{ acc_currency.amount }}{{ acc_currency.sign }}</div>
+            <div style="padding: 10px; background-color: #e9ecef; margin: 5px 0; border-radius: 4px;">
+                <strong>{{ acc_currency.amount|floatformat:2 }}{{ acc_currency.sign }}</strong>
+            </div>
+        {% empty %}
+            <div style="padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+                Нет денежных средств
+            </div>
         {% endfor %}
     </div>
-    <div>
-        <h4>Акции</h4>
+    
+    <div style="margin-bottom: 30px;">
+        <h4>📊 Акции в портфеле</h4>
         {% for acc_stock in stocks %}
-            <div>{{ acc_stock.ticker }} - {{ acc_stock.amount }} - {{ acc_stock.avg }}</div>
+            <div style="padding: 15px; background-color: #f8f9fa; margin: 10px 0; border-left: 4px solid #007bff; border-radius: 4px;">
+                <strong>{{ acc_stock.ticker }}</strong><br>
+                Количество: {{ acc_stock.amount }} акций<br>
+                Средняя цена покупки: {{ acc_stock.avg|floatformat:2 }}<br>
+                <a href="{% url 'stock:detail' acc_stock.stock_id %}" style="color: #dc3545; text-decoration: none; font-weight: bold;">
+                    → Перейти к торговле
+                </a>
+            </div>
+        {% empty %}
+            <div style="padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+                Нет акций в портфеле
+            </div>
         {% endfor %}
     </div>
-    <div>
-        <a href="{% url 'stock:list' %}">К списку акций</a>
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'stock:list' %}" style="color: #007bff; text-decoration: none;">📈 К списку акций</a>
     </div>
+    
+    <!-- Вывод сообщений -->
+    {% if messages %}
+    <div style="margin-top: 20px;">
+        {% for message in messages %}
+            <div style="padding: 12px; border-radius: 5px; margin: 10px 0; 
+                {% if message.tags == 'success' %}background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+                {% else %}background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 {% endblock %}
-
 
 
 

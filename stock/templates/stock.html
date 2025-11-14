@@ -1,20 +1,61 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div>
-        Акции {{ stock.name }} ({{ stock.ticker }}) <img src="{{ MEDIA_URL }}/{{ stock.logo }}" width="40" />
+    <div style="margin-bottom: 20px;">
+        <h2>Акции {{ stock.name }} ({{ stock.ticker }})</h2>
+        {% if stock.logo %}
+            <img src="{{ MEDIA_URL }}/{{ stock.logo }}" width="40" />
+        {% endif %}
     </div>
-    <div>
+    
+    <!-- Форма покупки -->
+    <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #28a745; border-radius: 5px;">
+        <h3 style="color: #28a745;">🛒 Покупка акций</h3>
         <form method="POST" action="{% url 'stock:buy' stock.pk %}">
             {% csrf_token %}
-            {{ form }}
-            <button>Купить</button>
+            {{ form.as_p }}
+            <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                Купить акции
+            </button>
         </form>
     </div>
-    <div>
-        <a href="{% url 'stock:list' %}">Назад к списку</a>
+    
+    <!-- Форма продажи (только если есть акции) -->
+    {% if user_has_stock %}
+    <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #dc3545; border-radius: 5px; background-color: #f8f9fa;">
+        <h3 style="color: #dc3545;">💰 Продажа акций</h3>
+        <form method="POST" action="{% url 'stock:sell' stock.pk %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                Продать акции
+            </button>
+        </form>
+        <small style="color: #6c757d;">Доступно для продажи: {{ available_amount }} акций</small>
     </div>
+    {% else %}
+    <div style="padding: 15px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; margin-bottom: 20px;">
+        ℹ️ У вас нет акций {{ stock.ticker }} для продажи
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'stock:list' %}" style="color: #007bff; text-decoration: none;">← Назад к списку акций</a>
+    </div>
+    
+    <!-- Вывод сообщений -->
+    {% if messages %}
+    <div style="margin-top: 20px;">
+        {% for message in messages %}
+            <div style="padding: 12px; border-radius: 5px; margin: 10px 0; 
+                {% if message.tags == 'success' %}background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+                {% elif message.tags == 'error' %}background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+                {% else %}background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 {% endblock %}
-
 
 
 
